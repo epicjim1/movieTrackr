@@ -16,7 +16,8 @@ const CardComponent = ({ item, type }) => {
             // transition: "transform 0.2s ease-in-out",
             zIndex: 10,
             "& .overlay": {
-              opacity: 1,
+              base: "opacity: 0",
+              md: "opacity: 1",
             },
           }}
         >
