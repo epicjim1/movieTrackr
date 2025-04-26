@@ -10,6 +10,7 @@ const CardComponent = ({ item, type }) => {
         <Box
           position={"relative"}
           transform={"scale(1)"}
+          overflow={"hidden"}
           transition={"transform 0.1s ease-in-out"}
           _hover={{
             transform: { base: "scale(1)", md: "scale(1.08)" },
@@ -24,7 +25,8 @@ const CardComponent = ({ item, type }) => {
           <Image
             src={`${imagePath}/${item?.poster_path}`}
             alt={item?.title || item?.name}
-            height={"100%"}
+            height={"auto"}
+            width={"100%"}
           />
           <Box
             className="overlay"
