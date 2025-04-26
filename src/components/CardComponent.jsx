@@ -17,8 +17,10 @@ const CardComponent = ({ item, type }) => {
             // transition: "transform 0.2s ease-in-out",
             zIndex: 10,
             "& .overlay": {
-              base: "opacity: 0",
-              md: "opacity: 1",
+              opacity: 0,
+              "@media (min-width: 48em)": {
+                opacity: 1,
+              },
             },
           }}
         >
@@ -40,7 +42,9 @@ const CardComponent = ({ item, type }) => {
             opacity={"0"}
             transition={"opacity 0.3s ease-in-out"}
           >
-            <Text textAlign={"center"}>{item?.title || item?.name}</Text>
+            <Text textAlign={"center"} noOfLines={"2"}>
+              {item?.title || item?.name}
+            </Text>
             <Text
               textAlign={"center"}
               fontSize={"x-small"}
@@ -50,11 +54,13 @@ const CardComponent = ({ item, type }) => {
                 item?.release_date || item?.first_air_date
               ).getFullYear() || "N/A"}
             </Text>
+            {/* <Box flex="1" /> */}
             <Flex
               alignItems={"center"}
               justifyContent={"center"}
               gap={"2"}
-              mt={"4"}
+              mt={"1"}
+              // mb={"5"}
             >
               <StarIcon fontSize={"small"} />
               <Text>{item?.vote_average?.toFixed(1)}</Text>

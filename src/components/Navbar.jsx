@@ -108,7 +108,13 @@ const Navbar = () => {
                 <DrawerHeader>
                   {user ? (
                     <Flex alignItems="center" gap="2">
-                      <Avatar bg="red.500" size={"sm"} name={user?.email} />
+                      <Avatar
+                        bg="red.500"
+                        size={"sm"}
+                        color={"white"}
+                        name={user?.email}
+                        src={user?.photoURL}
+                      />
                       <Box fontSize={"sm"}>
                         {user?.displayName || user?.email}
                       </Box>
