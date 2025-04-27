@@ -13,6 +13,7 @@ import DetailsPage from "./pages/DetailsPage.jsx";
 import { AuthProvider } from "./context/authProvider.jsx";
 import Watchlist from "./pages/Watchlist.jsx";
 import Protected from "./components/routes/Protected.jsx";
+import NotFoundPage from "./pages/NotFoundPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
             <Watchlist />
           </Protected>
         ),
+      },
+      {
+        path: "*",
+        element: <NotFoundPage />,
       },
     ],
   },
