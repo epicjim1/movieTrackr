@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import { imagePath } from "../services/api";
 import { useFirestore } from "../services/firestore";
 import { useAuth } from "../context/useAuth";
-import { CheckIcon, StarIcon } from "@chakra-ui/icons";
+import { CloseIcon, DeleteIcon, StarIcon } from "@chakra-ui/icons";
 
 const WatchlistCard = ({ type, item, setWatchlist }) => {
   const { removeFromWatchlist } = useFirestore();
@@ -39,9 +39,10 @@ const WatchlistCard = ({ type, item, setWatchlist }) => {
           <Tooltip label="Remove from watchlist">
             <IconButton
               aria-label="Remove from watchlist"
-              icon={<CheckIcon />}
+              icon={<DeleteIcon />}
               size={"sm"}
-              colorScheme="green"
+              colorScheme="red"
+              variant="outline"
               position={"absolute"}
               zIndex={"999"}
               top="2px"
