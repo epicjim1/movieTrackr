@@ -25,7 +25,7 @@ export const useFirestore = () => {
       if (await checkIfInWatchlist(userId, dataId)) {
         toast({
           title: "Error!",
-          description: "This item is already in your watchlist.",
+          description: "This item is already in your watch later list.",
           status: "error",
           duration: 9000,
           isClosable: true,
@@ -36,7 +36,38 @@ export const useFirestore = () => {
       await setDoc(doc(db, "users", userId, "watchlist", dataId), data);
       toast({
         title: "Success!",
-        description: "Added to watchlist",
+        description: "Added to watch later",
+        status: "success",
+        isClosable: true,
+      });
+    } catch (error) {
+      console.log(error, "Error adding document");
+      toast({
+        title: "Error!",
+        description: "An error occurred.",
+        status: "error",
+        isClosable: true,
+      });
+    }
+  };
+
+  const addToWatchedFilms = async (userId, dataId, data) => {
+    try {
+      if (await checkIfInWatchedFilms(userId, dataId)) {
+        toast({
+          title: "Error!",
+          description: "This item is already in your watched list.",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+        return false;
+      }
+
+      await setDoc(doc(db, "users", userId, "watchedfilms", dataId), data);
+      toast({
+        title: "Success!",
+        description: "Added to watched list",
         status: "success",
         isClosable: true,
       });
@@ -68,6 +99,23 @@ export const useFirestore = () => {
     }
   };
 
+  const checkIfInWatchedFilms = async (userId, dataId) => {
+    const docRef = doc(
+      db,
+      "users",
+      userId?.toString(),
+      "watchedfilms",
+      dataId?.toString()
+    );
+
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   const removeFromWatchlist = async (userId, dataId) => {
     try {
       await deleteDoc(
@@ -75,7 +123,29 @@ export const useFirestore = () => {
       );
       toast({
         title: "Success!",
-        description: "Removed from watchlist",
+        description: "Removed from watch later list.",
+        status: "success",
+        isClosable: true,
+      });
+    } catch (error) {
+      console.log(error, "Error while deleting doc");
+      toast({
+        title: "Error!",
+        description: "An error occurred.",
+        status: "error",
+        isClosable: true,
+      });
+    }
+  };
+
+  const removeFromWatchedFilms = async (userId, dataId) => {
+    try {
+      await deleteDoc(
+        doc(db, "users", userId?.toString(), "watchedfilms", dataId?.toString())
+      );
+      toast({
+        title: "Success!",
+        description: "Removed from watched list",
         status: "success",
         isClosable: true,
       });
@@ -100,11 +170,55 @@ export const useFirestore = () => {
     return data;
   }, []);
 
+  const getWatchedFilms = useCallback(async (userId) => {
+    const querySnapshot = await getDocs(
+      collection(db, "users", userId, "watchedfilms")
+    );
+    const data = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+    }));
+    return data;
+  }, []);
+
+  const deleteWatchedFilms = async (userId) => {
+    console.log("func claaded");
+    try {
+      const querySnapshot = await getDocs(
+        collection(db, "users", userId, "watchedfilms")
+      );
+
+      const deletePromises = querySnapshot.docs.map((doc) =>
+        deleteDoc(doc.ref)
+      );
+      await Promise.all(deletePromises);
+
+      toast({
+        title: "Success!",
+        description: "All watched films deleted successfully.",
+        status: "success",
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error("Error deleting watched films:", error);
+      toast({
+        title: "Error!",
+        description: "An error occurred while deleting watched films.",
+        status: "error",
+        isClosable: true,
+      });
+    }
+  };
+
   return {
     addDocument,
     addToWatchlist,
+    addToWatchedFilms,
     checkIfInWatchlist,
+    checkIfInWatchedFilms,
     removeFromWatchlist,
+    removeFromWatchedFilms,
     getWatchlist,
+    getWatchedFilms,
+    deleteWatchedFilms,
   };
 };

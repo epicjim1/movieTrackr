@@ -1,4 +1,4 @@
-import { extendTheme } from "@chakra-ui/react";
+import { extendTheme, Select } from "@chakra-ui/react";
 import { mode } from "@chakra-ui/theme-tools";
 
 const config = {
@@ -18,6 +18,6 @@ const styles = {
   }),
 };
 
-const theme = extendTheme({ config, styles });
+const theme = extendTheme({ config, styles, components: { Select } });
 
 export default theme;

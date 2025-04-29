@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
 import { useFirestore } from "../services/firestore";
 import { useAuth } from "../context/useAuth";
-import { Container, Flex, Grid, Heading, Spinner } from "@chakra-ui/react";
+import {
+  Container,
+  Flex,
+  Grid,
+  Heading,
+  Spinner,
+  Text,
+} from "@chakra-ui/react";
 import WatchlistCard from "../components/WatchlistCard";
 import PaginationComponent from "../components/PaginationComponent";
 
@@ -11,7 +18,7 @@ const Watchlist = () => {
   const [watchlist, setWatchlist] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activePage, setActivePage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   useEffect(() => {
     if (user?.uid) {
@@ -48,8 +55,9 @@ const Watchlist = () => {
     <Container maxW={"container.xl"}>
       <Flex alignItems={"baseline"} gap={"4"} my={"10"}>
         <Heading as={"h2"} fontSize={"md"} textTransform={"uppercase"}>
-          Watchlist
+          Watch Later
         </Heading>
+        <Text>You Want To Watch {watchlist?.length} Films/Shows</Text>
       </Flex>
       {isLoading && (
         <Flex justify={"center"} mt={"10"}>
@@ -59,7 +67,7 @@ const Watchlist = () => {
       {!isLoading && watchlist?.length === 0 && (
         <Flex justify={"center"} mt={"10"}>
           <Heading as={"h2"} fontSize={"md"} textTransform={"uppercase"}>
-            Watchlist is empty
+            You dont have anything to watch later!
           </Heading>
         </Flex>
       )}

@@ -41,8 +41,14 @@ const DetailsPage = () => {
   const { type, id } = router;
 
   const { user } = useAuth();
-  const { addToWatchlist, checkIfInWatchlist, removeFromWatchlist } =
-    useFirestore();
+  const {
+    addToWatchlist,
+    checkIfInWatchlist,
+    removeFromWatchlist,
+    addToWatchedFilms,
+    checkIfInWatchedFilms,
+    removeFromWatchedFilms,
+  } = useFirestore();
   const toast = useToast();
 
   const [details, setDetails] = useState({});
@@ -52,6 +58,7 @@ const DetailsPage = () => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isInWatchlist, setIsInWatchlist] = useState(false);
+  const [isInWatchedFilms, setIsInWatchedFilms] = useState(false);
 
   // useEffect(() => {
   //   setLoading(true);
@@ -121,7 +128,7 @@ const DetailsPage = () => {
   const handleSaveToWatchlist = async () => {
     if (!user) {
       toast({
-        title: "Login to add to watchlist",
+        title: "Login to add to watch later",
         status: "error",
         isClosable: true,
       });
@@ -136,6 +143,9 @@ const DetailsPage = () => {
       release_date: details?.release_date || details?.first_air_date,
       vote_average: details?.vote_average,
       overview: details?.overview,
+      saved_at: new Date().toISOString(),
+      runtime: details?.runtime || details?.number_of_episodes,
+      genres: details?.genres?.map((genre) => genre.name) || [],
     };
 
     // console.log(data, "data");
@@ -149,18 +159,54 @@ const DetailsPage = () => {
   useEffect(() => {
     if (!user) {
       setIsInWatchlist(false);
+      setIsInWatchedFilms(false);
       return;
     }
 
     checkIfInWatchlist(user?.uid, id).then((data) => {
       setIsInWatchlist(data);
     });
-  }, [id, user, checkIfInWatchlist]);
+
+    checkIfInWatchedFilms(user?.uid, id).then((data) => {
+      setIsInWatchedFilms(data);
+    });
+  }, [id, user, checkIfInWatchlist, checkIfInWatchedFilms]);
 
   const handleRemoveFromWatchlist = async () => {
     await removeFromWatchlist(user?.uid, id);
     const isSetToWatchlist = await checkIfInWatchlist(user?.uid, id);
     setIsInWatchlist(isSetToWatchlist);
+  };
+
+  const handleSaveToWatchedFilms = async () => {
+    if (!user) {
+      toast({
+        title: "Login to add to watched list",
+        status: "error",
+        isClosable: true,
+      });
+      return;
+    }
+
+    const data = {
+      id: details?.id,
+      title: details?.title || details?.name,
+      type: type,
+      poster_path: details?.poster_path,
+      release_date: details?.release_date || details?.first_air_date,
+      vote_average: details?.vote_average,
+      overview: details?.overview,
+      saved_at: new Date().toISOString(),
+      runtime: details?.runtime || details?.number_of_episodes,
+      genres: details?.genres?.map((genre) => genre.name) || [],
+    };
+
+    // console.log(data, "data");
+    // addDocument("watchlist", data);
+    const dataId = details?.id?.toString();
+    await addToWatchedFilms(user?.uid, dataId, data);
+    const isSetToWatchlist = await checkIfInWatchedFilms(user?.uid, dataId);
+    setIsInWatchedFilms(isSetToWatchlist);
   };
 
   if (loading) {
@@ -170,6 +216,12 @@ const DetailsPage = () => {
       </Flex>
     );
   }
+
+  const handleRemoveFromWatchedFilms = async () => {
+    await removeFromWatchedFilms(user?.uid, id);
+    const isSetToWatchedFilms = await checkIfInWatchedFilms(user?.uid, id);
+    setIsInWatchedFilms(isSetToWatchedFilms);
+  };
 
   const title = details?.title || details?.name;
   const releaseDate =
@@ -251,24 +303,44 @@ const DetailsPage = () => {
                 <Text display={{ base: "none", md: "initial" }}>
                   User Score
                 </Text>
-                {isInWatchlist ? (
-                  <Button
-                    leftIcon={<CheckCircleIcon />}
-                    colorScheme="green"
-                    variant={"outline"}
-                    onClick={handleRemoveFromWatchlist}
-                  >
-                    In watchlist
-                  </Button>
-                ) : (
-                  <Button
-                    leftIcon={<SmallAddIcon />}
-                    variant={"outline"}
-                    onClick={handleSaveToWatchlist}
-                  >
-                    Add to watchlist
-                  </Button>
-                )}
+                <Flex wrap={"wrap"} gap={{ base: "1", md: "4" }}>
+                  {isInWatchedFilms ? (
+                    <Button
+                      leftIcon={<CheckCircleIcon />}
+                      colorScheme="purple"
+                      variant={"outline"}
+                      onClick={handleRemoveFromWatchedFilms}
+                    >
+                      In Watched List
+                    </Button>
+                  ) : (
+                    <Button
+                      leftIcon={<SmallAddIcon />}
+                      variant={"outline"}
+                      onClick={handleSaveToWatchedFilms}
+                    >
+                      Add to Watched List
+                    </Button>
+                  )}
+                  {isInWatchlist ? (
+                    <Button
+                      leftIcon={<CheckCircleIcon />}
+                      colorScheme="blue"
+                      variant={"outline"}
+                      onClick={handleRemoveFromWatchlist}
+                    >
+                      In Watch Later
+                    </Button>
+                  ) : (
+                    <Button
+                      leftIcon={<SmallAddIcon />}
+                      variant={"outline"}
+                      onClick={handleSaveToWatchlist}
+                    >
+                      Add to Watch Later
+                    </Button>
+                  )}
+                </Flex>
               </Flex>
               <Text
                 color={"gray.400"}

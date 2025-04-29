@@ -16,12 +16,19 @@ import {
   MenuItem,
   MenuList,
   useDisclosure,
+  useColorMode,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
-import { HamburgerIcon, SearchIcon } from "@chakra-ui/icons";
+import {
+  HamburgerIcon,
+  SearchIcon,
+  TriangleDownIcon,
+  TriangleUpIcon,
+} from "@chakra-ui/icons";
 
 const Navbar = () => {
+  const { toggleColorMode, colorMode } = useColorMode();
   const { user, signInWithGoogle, logout } = useAuth();
   const { onOpen, isOpen, onClose } = useDisclosure();
 
@@ -50,6 +57,15 @@ const Navbar = () => {
             </Box>
           </Link>
 
+          <IconButton
+            aria-label="toggle theme"
+            rounded="full"
+            onClick={toggleColorMode}
+            icon={
+              colorMode === "dark" ? <TriangleDownIcon /> : <TriangleUpIcon />
+            }
+          />
+
           {/* Desktop */}
           <Flex
             gap={"4"}
@@ -74,8 +90,11 @@ const Navbar = () => {
                   />
                 </MenuButton>
                 <MenuList>
+                  <Link to={"/watchedfilms"}>
+                    <MenuItem>Watched List</MenuItem>
+                  </Link>
                   <Link to={"/watchlist"}>
-                    <MenuItem>Watchlist</MenuItem>
+                    <MenuItem>Watch Later List</MenuItem>
                   </Link>
                   <MenuItem onClick={logout}>Logout</MenuItem>
                 </MenuList>
@@ -136,7 +155,8 @@ const Navbar = () => {
                     <Link to="/shows">TV Shows</Link>
                     {user && (
                       <>
-                        <Link to="/watchlist">Watchlist</Link>
+                        <Link to="/watchedfilms">Watched List</Link>
+                        <Link to="/watchlist">Watch Later List</Link>
                         <Button
                           variant={"outline"}
                           colorScheme="red"
