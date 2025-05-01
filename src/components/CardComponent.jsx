@@ -1,9 +1,87 @@
-import { Box, Flex, Image, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  IconButton,
+  Image,
+  Text,
+  Tooltip,
+  useToast,
+} from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import { imagePath } from "../services/api";
+import { fetchDetails, imagePath } from "../services/api";
 import { StarIcon } from "@chakra-ui/icons";
+import { MdOutlineWatchLater } from "react-icons/md";
+import { AiOutlineCheckCircle } from "react-icons/ai";
+import { useAuth } from "../context/useAuth";
+import { useFirestore } from "../services/firestore";
 
-const CardComponent = ({ item, type }) => {
+const CardComponent = ({ item, type, isEnabled = true }) => {
+  const { user } = useAuth();
+  const { addToWatchlist, addToWatchedFilms } = useFirestore();
+  const toast = useToast();
+
+  const handleAddToWatched = async (event) => {
+    event.preventDefault();
+
+    if (!user) {
+      toast({
+        title: "Login to mark as watched",
+        status: "error",
+        isClosable: true,
+      });
+      return;
+    }
+
+    const details = await fetchDetails(type, item.id);
+
+    const data = {
+      id: details?.id,
+      title: details?.title || details?.name,
+      type: type,
+      poster_path: details?.poster_path,
+      release_date: details?.release_date || details?.first_air_date,
+      vote_average: details?.vote_average,
+      overview: details?.overview,
+      saved_at: new Date().toISOString(),
+      runtime: details?.runtime || details?.number_of_episodes,
+      genres: details?.genres?.map((genre) => genre.name) || [],
+    };
+
+    const dataId = details?.id?.toString();
+    await addToWatchedFilms(user?.uid, dataId, data);
+  };
+
+  const handleAddToWatchLater = async (event) => {
+    event.preventDefault();
+
+    if (!user) {
+      toast({
+        title: "Login to add to watch later",
+        status: "error",
+        isClosable: true,
+      });
+      return;
+    }
+
+    const details = await fetchDetails(type, item.id);
+
+    const data = {
+      id: details?.id,
+      title: details?.title || details?.name,
+      type: type,
+      poster_path: details?.poster_path,
+      release_date: details?.release_date || details?.first_air_date,
+      vote_average: details?.vote_average,
+      overview: details?.overview,
+      saved_at: new Date().toISOString(),
+      runtime: details?.runtime || details?.number_of_episodes,
+      genres: details?.genres?.map((genre) => genre.name) || [],
+    };
+
+    const dataId = details?.id?.toString();
+    await addToWatchlist(user?.uid, dataId, data);
+  };
+
   return (
     <Link to={`/${type}/${item?.id}`}>
       <Box position={"relative"} overflow={"hidden"}>
@@ -11,9 +89,10 @@ const CardComponent = ({ item, type }) => {
           position={"relative"}
           transform={"scale(1)"}
           overflow={"hidden"}
+          maxH={"355.2px"}
           transition={"transform 0.1s ease-in-out"}
           _hover={{
-            transform: { base: "scale(1)", md: "scale(1.08)" },
+            transform: { base: "scale(1)", md: "scale(1.03)" },
             // transition: "transform 0.2s ease-in-out",
             zIndex: 10,
             "& .overlay": {
@@ -30,6 +109,38 @@ const CardComponent = ({ item, type }) => {
             height={"auto"}
             width={"100%"}
           />
+          {isEnabled && (
+            <Box
+              className="overlay"
+              opacity={"0"}
+              position="absolute"
+              top="2"
+              right="2"
+              display="flex"
+              gap="2"
+            >
+              <Tooltip label="Watch Later" hasArrow>
+                <IconButton
+                  aria-label="Watch Later"
+                  icon={<MdOutlineWatchLater />}
+                  size="sm"
+                  colorScheme="blue"
+                  variant="solid"
+                  onClick={(e) => handleAddToWatchLater(e)}
+                />
+              </Tooltip>
+              <Tooltip label="Add to Watched" hasArrow>
+                <IconButton
+                  aria-label="Add to Watched"
+                  icon={<AiOutlineCheckCircle />}
+                  size="sm"
+                  colorScheme="purple"
+                  variant="solid"
+                  onClick={(e) => handleAddToWatched(e)}
+                />
+              </Tooltip>
+            </Box>
+          )}
           <Box
             className="overlay"
             position={"absolute"}
@@ -37,12 +148,12 @@ const CardComponent = ({ item, type }) => {
             bottom={"0"}
             left={"0"}
             w={"100%"}
-            h={"33%"}
+            h={"25%"}
             bg={"rgba(0,0,0,0.9)"}
             opacity={"0"}
             transition={"opacity 0.3s ease-in-out"}
           >
-            <Text textAlign={"center"} noOfLines={"2"}>
+            <Text textAlign={"center"} noOfLines={"1"}>
               {item?.title || item?.name}
             </Text>
             <Text

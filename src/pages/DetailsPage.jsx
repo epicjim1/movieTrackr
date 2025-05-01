@@ -356,7 +356,7 @@ const DetailsPage = () => {
               <Text fontSize={"md"} mb={"3"}>
                 {details?.overview}
               </Text>
-              <Flex mt={"6"} gap={"2"}>
+              <Flex mt={"6"} gap={"2"} flexWrap={"wrap"}>
                 {details?.genres?.map((genre) => (
                   <Badge key={genre?.id} p={"1"}>
                     {genre?.name}
@@ -385,6 +385,7 @@ const DetailsPage = () => {
               <Box
                 key={item?.id}
                 minW={"150px"}
+                maxW={"150px"}
                 bg={"whiteAlpha.200"}
                 borderRadius={"10"}
                 overflow={"hidden"}

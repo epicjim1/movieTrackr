@@ -42,7 +42,7 @@ const WatchlistCard = ({ type, item, setWatchlist }) => {
               icon={<DeleteIcon />}
               size={"sm"}
               colorScheme="red"
-              variant="outline"
+              variant="solid"
               position={"absolute"}
               zIndex={"999"}
               top="2px"

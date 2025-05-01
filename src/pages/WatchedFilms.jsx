@@ -50,6 +50,7 @@ const WatchedFilms = () => {
 
   useEffect(() => {
     if (user?.uid) {
+      setIsLoading(true);
       getWatchedFilms(user?.uid)
         .then((data) => {
           console.log(data, "data");
@@ -66,6 +67,7 @@ const WatchedFilms = () => {
   }, [user?.uid, getWatchedFilms]);
 
   useEffect(() => {
+    setIsLoading(true);
     if (originalWatchedFilms.length === 0) return;
 
     let updated = [...originalWatchedFilms];
@@ -112,6 +114,7 @@ const WatchedFilms = () => {
     }
 
     setWatchedFilms(updated);
+    setIsLoading(false);
   }, [
     sortBy,
     filterByType,
@@ -524,7 +527,12 @@ const WatchedFilms = () => {
               isLoading ? (
                 <Skeleton height={"355"} key={i} />
               ) : (
-                <CardComponent key={item?.id} item={item} type={item?.type} />
+                <CardComponent
+                  key={item?.id}
+                  item={item}
+                  type={item?.type}
+                  isEnabled={false}
+                />
               )
             )}
           </Grid>

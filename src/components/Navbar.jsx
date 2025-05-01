@@ -57,14 +57,14 @@ const Navbar = () => {
             </Box>
           </Link>
 
-          <IconButton
+          {/* <IconButton
             aria-label="toggle theme"
             rounded="full"
             onClick={toggleColorMode}
             icon={
               colorMode === "dark" ? <TriangleDownIcon /> : <TriangleUpIcon />
             }
-          />
+          /> */}
 
           {/* Desktop */}
           <Flex
