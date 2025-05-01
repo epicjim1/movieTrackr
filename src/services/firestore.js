@@ -181,7 +181,7 @@ export const useFirestore = () => {
   }, []);
 
   const deleteWatchedFilms = async (userId) => {
-    console.log("func claaded");
+    console.log("delete watchedfilms called");
     try {
       const querySnapshot = await getDocs(
         collection(db, "users", userId, "watchedfilms")
@@ -209,6 +209,35 @@ export const useFirestore = () => {
     }
   };
 
+  const deleteWatchList = async (userId) => {
+    console.log("delete watchlist called");
+    try {
+      const querySnapshot = await getDocs(
+        collection(db, "users", userId, "watchlist")
+      );
+
+      const deletePromises = querySnapshot.docs.map((doc) =>
+        deleteDoc(doc.ref)
+      );
+      await Promise.all(deletePromises);
+
+      toast({
+        title: "Success!",
+        description: "All of watchlist deleted successfully.",
+        status: "success",
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error("Error deleting watchlist:", error);
+      toast({
+        title: "Error!",
+        description: "An error occurred while deleting watchlist.",
+        status: "error",
+        isClosable: true,
+      });
+    }
+  };
+
   return {
     addDocument,
     addToWatchlist,
@@ -220,5 +249,6 @@ export const useFirestore = () => {
     getWatchlist,
     getWatchedFilms,
     deleteWatchedFilms,
+    deleteWatchList,
   };
 };

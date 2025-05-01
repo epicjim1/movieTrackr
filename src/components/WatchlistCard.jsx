@@ -44,7 +44,7 @@ const WatchlistCard = ({ type, item, setWatchlist }) => {
               colorScheme="red"
               variant="solid"
               position={"absolute"}
-              zIndex={"999"}
+              zIndex={"2"}
               top="2px"
               left={"2px"}
               onClick={handleRemoveClick}
@@ -67,7 +67,7 @@ const WatchlistCard = ({ type, item, setWatchlist }) => {
               {item?.vote_average?.toFixed(1)}
             </Text>
           </Flex>
-          <Text mt="4" fontSize={{ base: "xs", md: "sm" }} noOfLines={5}>
+          <Text mt="4" fontSize={{ base: "xs", md: "sm" }} noOfLines={4}>
             {item?.overview}
           </Text>
         </Box>

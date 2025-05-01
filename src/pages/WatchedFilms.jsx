@@ -34,19 +34,20 @@ import { ChevronDownIcon, DeleteIcon } from "@chakra-ui/icons";
 const WatchedFilms = () => {
   const { getWatchedFilms, deleteWatchedFilms } = useFirestore();
   const { user } = useAuth();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const cancelRef = React.useRef();
   const [originalWatchedFilms, setOriginalWatchedFilms] = useState([]);
   const [watchedFilms, setWatchedFilms] = useState([]);
-  const [sortBy, setSortBy] = useState("saved_at.desc");
-  const [filterByType, setFilterByType] = useState("all");
-  const [selectedGenres, setSelectedGenres] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activePage, setActivePage] = useState(1);
   const itemsPerPage = 30;
 
+  const [filterByType, setFilterByType] = useState("all");
+  const [sortBy, setSortBy] = useState("saved_at.desc");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [selectedGenres, setSelectedGenres] = useState([]);
   const [sliderValue, setSliderValue] = useState(240);
   const [runtimeFilter, setRuntimeFilter] = useState(240);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = React.useRef();
 
   useEffect(() => {
     if (user?.uid) {
@@ -87,7 +88,7 @@ const WatchedFilms = () => {
       }
     }
 
-    // Apply genre filter
+    // Single select genre filter
     // if (selectedGenres !== "All") {
     //   updated = updated.filter((film) => {
     //     // console.log(film?.genres, "movie");
@@ -113,11 +114,17 @@ const WatchedFilms = () => {
       );
     }
 
+    // Reverse if ascending
+    if (sortOrder === "asc") {
+      updated.reverse();
+    }
+
     setWatchedFilms(updated);
     setIsLoading(false);
   }, [
-    sortBy,
     filterByType,
+    sortBy,
+    sortOrder,
     selectedGenres,
     runtimeFilter,
     originalWatchedFilms,
@@ -168,24 +175,11 @@ const WatchedFilms = () => {
             direction={{ base: "row", md: "column" }}
             align={{ base: "center", md: "normal" }}
             gap="1"
-            maxW={{ base: "244px", md: "150px" }}
+            maxW={{ base: "244px", md: "100px" }}
           >
             <Text fontWeight="bold" w={"70px"}>
               Type:
             </Text>
-            {/* <Select
-              w="150px"
-              focusBorderColor="purple.500"
-              value={filterByType}
-              onChange={(e) => {
-                setActivePage(1);
-                setFilterByType(e.target.value);
-              }}
-            >
-              <option value="all">All</option>
-              <option value="tv">TV Shows</option>
-              <option value="movie">Films</option>
-            </Select> */}
             <Select
               focusBorderColor="purple.500"
               onChange={(e) => {
@@ -205,6 +199,13 @@ const WatchedFilms = () => {
                   width: ["150px", "150px", "325px"],
                   zIndex: "2",
                 }),
+                singleValue: (provided) => ({
+                  ...provided,
+                  whiteSpace: "nowrap",
+                  overflow: "visible",
+                  textOverflow: "ellipsis", // already happening, but ensure it's correct
+                  maxWidth: "100%", // important to allow the text to stretch
+                }),
                 option: (provided, state) => ({
                   ...provided,
                   color: state.isSelected ? "purple.100" : "white",
@@ -213,30 +214,22 @@ const WatchedFilms = () => {
                     ? "purple.500" // background for selected
                     : "auto",
                 }),
+                menu: (provided) => ({
+                  ...provided,
+                  zIndex: 999, // Very high value to ensure it appears on top
+                }),
               }}
             />
           </Flex>
           <Flex
             direction={{ base: "row", md: "column" }}
             gap="1"
-            maxW={{ base: "244px", md: "150px" }}
+            maxW={{ base: "244px", md: "125px" }}
             align={{ base: "center", md: "normal" }}
           >
             <Text fontWeight="bold" w={"70px"}>
               Sort By:
             </Text>
-            {/* <Select
-              w={"150px"}
-              focusBorderColor="purple.500"
-              onChange={(e) => {
-                setActivePage(1);
-                setSortBy(e.target.value);
-              }}
-            >
-              <option value={"saved_at.desc"}>When Added</option>
-              <option value={"vote_average.desc"}>Rating</option>
-              <option value={"release_date.desc"}>Release Date</option>
-            </Select> */}
             <Select
               focusBorderColor="purple.500"
               onChange={(e) => {
@@ -255,6 +248,13 @@ const WatchedFilms = () => {
                   ...provided,
                   width: ["150px", "150px", "325px"],
                 }),
+                singleValue: (provided) => ({
+                  ...provided,
+                  whiteSpace: "nowrap",
+                  overflow: "visible",
+                  textOverflow: "ellipsis", // already happening, but ensure it's correct
+                  maxWidth: "100%", // important to allow the text to stretch
+                }),
                 option: (provided, state) => ({
                   ...provided,
                   color: state.isSelected ? "purple.100" : "white",
@@ -263,13 +263,62 @@ const WatchedFilms = () => {
                     ? "purple.500" // background for selected
                     : "auto",
                 }),
+                menu: (provided) => ({
+                  ...provided,
+                  zIndex: 999, // Very high value to ensure it appears on top
+                }),
               }}
             />
           </Flex>
           <Flex
             direction={{ base: "row", md: "column" }}
             gap="1"
-            maxW={{ base: "244px", md: "325px" }}
+            maxW={{ base: "244px", md: "100px" }}
+            align={{ base: "center", md: "normal" }}
+          >
+            <Text fontWeight="bold" w={"70px"}>
+              Order:
+            </Text>
+            <Select
+              focusBorderColor="purple.500"
+              onChange={(e) => {
+                setActivePage(1);
+                setSortOrder(e.value);
+              }}
+              isSearchable={false}
+              defaultValue={{ value: "descending", label: "Descending" }}
+              options={[
+                { value: "desc", label: "Descending" },
+                { value: "asc", label: "Ascending" },
+              ]}
+              chakraStyles={{
+                valueContainer: (provided) => ({
+                  ...provided,
+                  width: ["150px", "150px", "325px"],
+                }),
+                singleValue: (provided) => ({
+                  ...provided,
+                  whiteSpace: "nowrap",
+                  overflow: "visible",
+                  textOverflow: "ellipsis", // already happening, but ensure it's correct
+                  maxWidth: "100%", // important to allow the text to stretch
+                }),
+                option: (provided, state) => ({
+                  ...provided,
+                  color: state.isSelected ? "purple.100" : "white",
+                  backgroundColor: state.isSelected ? "purple.500" : "auto",
+                }),
+                menu: (provided) => ({
+                  ...provided,
+                  zIndex: 999, // Very high value to ensure it appears on top
+                }),
+              }}
+            />
+          </Flex>
+          <Flex
+            direction={{ base: "row", md: "column" }}
+            gap="1"
+            maxW={{ base: "244px", md: "300px" }}
             align={{ base: "center", md: "normal" }}
           >
             <Text fontWeight="bold" w={"70px"}>
@@ -306,13 +355,13 @@ const WatchedFilms = () => {
               chakraStyles={{
                 control: (provided) => ({
                   ...provided,
-                  maxW: ["174.89px", null, "325px"], // responsive width
+                  maxW: ["174.89px", null, "325px"],
                 }),
                 valueContainer: (provided) => ({
                   ...provided,
-                  maxHeight: "38px", // controls max height of selected tags
+                  maxHeight: "38px",
                   overflowY: "auto",
-                  flexWrap: "wrap", // if you prefer horizontal scroll
+                  flexWrap: "wrap",
                   width: ["150px", null, "325px"],
                 }),
                 multiValue: (provided) => ({
@@ -335,45 +384,12 @@ const WatchedFilms = () => {
                 //   borderWidth: 0,
                 //   maxH: "200px",
                 // }),
+                menu: (provided) => ({
+                  ...provided,
+                  zIndex: 999, // Very high value to ensure it appears on top
+                }),
               }}
             />
-            {/* <Select
-              w="150px"
-              focusBorderColor="purple.500"
-              onChange={(e) => {
-                setActivePage(1);
-                setSelectedGenres(e.target.value);
-              }}
-              sx={{
-                "& > option": {
-                  height: "200px",
-                },
-                "& > optgroup": {
-                  maxHeight: "200px",
-                  overflowY: "scroll",
-                },
-              }}
-            >
-              <option value="All">All</option>
-              <option value="Action">Action</option>
-              <option value="Adventure">Adventure</option>
-              <option value="Animation">Animation</option>
-              <option value="Comedy">Comedy</option>
-              <option value="Crime">Crime</option>
-              <option value="Documentary">Documentary</option>
-              <option value="Drama">Drama</option>
-              <option value="Family">Family</option>
-              <option value="Fantasy">Fantasy</option>
-              <option value="History">History</option>
-              <option value="Horror">Horror</option>
-              <option value="Music">Music</option>
-              <option value="Mystery">Mystery</option>
-              <option value="Romance">Romance</option>
-              <option value="Science Fiction">Science Fiction</option>
-              <option value="Thriller">Thriller</option>
-              <option value="War">War</option>
-              <option value="Western">Western</option>
-            </Select> */}
           </Flex>
           <Flex
             direction={{ base: "row", md: "column" }}
@@ -403,9 +419,6 @@ const WatchedFilms = () => {
               defaultValue={sliderValue}
               isDisabled={filterByType !== "movie"}
             >
-              {/* mt: "2",
-            ml: "-2.5",
-            fontSize: "sm", */}
               {/* <SliderMark value={0} mt={"2"} ml={"-2.5"} fontSize={"sm"}>
                 {minutesToHours(0)}
               </SliderMark>
@@ -445,7 +458,7 @@ const WatchedFilms = () => {
               <SliderThumb boxSize={4} />
             </Slider>
           </Flex>
-          <Flex
+          {/* <Flex
             direction={{ base: "row", md: "column" }}
             gap="1"
             maxW={{ base: "244px", md: "325px" }}
@@ -497,7 +510,7 @@ const WatchedFilms = () => {
                 </AlertDialogContent>
               </AlertDialogOverlay>
             </AlertDialog>
-          </Flex>
+          </Flex> */}
         </Flex>
       </Flex>
       {isLoading && (
@@ -531,7 +544,7 @@ const WatchedFilms = () => {
                   key={item?.id}
                   item={item}
                   type={item?.type}
-                  isEnabled={false}
+                  isEnabled={"false"}
                 />
               )
             )}

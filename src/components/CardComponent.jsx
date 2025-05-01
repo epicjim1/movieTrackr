@@ -9,15 +9,21 @@ import {
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { fetchDetails, imagePath } from "../services/api";
-import { StarIcon } from "@chakra-ui/icons";
+import { DeleteIcon, StarIcon } from "@chakra-ui/icons";
 import { MdOutlineWatchLater } from "react-icons/md";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { useAuth } from "../context/useAuth";
 import { useFirestore } from "../services/firestore";
 
-const CardComponent = ({ item, type, isEnabled = true }) => {
+const CardComponent = ({
+  item,
+  type,
+  isEnabled = "true",
+  setWatchlist = null,
+}) => {
   const { user } = useAuth();
-  const { addToWatchlist, addToWatchedFilms } = useFirestore();
+  const { addToWatchlist, addToWatchedFilms, removeFromWatchlist } =
+    useFirestore();
   const toast = useToast();
 
   const handleAddToWatched = async (event) => {
@@ -82,6 +88,13 @@ const CardComponent = ({ item, type, isEnabled = true }) => {
     await addToWatchlist(user?.uid, dataId, data);
   };
 
+  const handleRemoveClick = (event) => {
+    event.preventDefault(); // Prevent the default behavior (link redirection)
+    removeFromWatchlist(user?.uid, item.id).then(() => {
+      setWatchlist((prev) => prev.filter((el) => el.id !== item.id));
+    });
+  };
+
   return (
     <Link to={`/${type}/${item?.id}`}>
       <Box position={"relative"} overflow={"hidden"}>
@@ -109,7 +122,7 @@ const CardComponent = ({ item, type, isEnabled = true }) => {
             height={"auto"}
             width={"100%"}
           />
-          {isEnabled && (
+          {isEnabled !== "false" && isEnabled !== "watchlist" && (
             <Box
               className="overlay"
               opacity={"0"}
@@ -137,6 +150,32 @@ const CardComponent = ({ item, type, isEnabled = true }) => {
                   colorScheme="purple"
                   variant="solid"
                   onClick={(e) => handleAddToWatched(e)}
+                />
+              </Tooltip>
+            </Box>
+          )}
+          {isEnabled !== "false" && isEnabled === "watchlist" && (
+            <Box
+              className="overlay"
+              opacity={"0"}
+              position="absolute"
+              top="2"
+              left="2"
+            >
+              <Tooltip label="Remove from watchlist">
+                <IconButton
+                  aria-label="Remove from watchlist"
+                  icon={<DeleteIcon />}
+                  size={"sm"}
+                  colorScheme="red"
+                  variant="solid"
+                  // position={"absolute"}
+                  // className="overlay"
+                  // opacity={"0"}
+                  // zIndex={"999"}
+                  // top="2px"
+                  // left={"2px"}
+                  onClick={handleRemoveClick}
                 />
               </Tooltip>
             </Box>
