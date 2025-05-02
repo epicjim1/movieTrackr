@@ -15,6 +15,7 @@ import Watchlist from "./pages/Watchlist.jsx";
 import Protected from "./components/routes/Protected.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import WatchedFilms from "./pages/WatchedFilms.jsx";
+import AuthPage from "./pages/AuthPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
+      },
+      {
+        path: "/authorization",
+        element: <AuthPage />,
       },
       {
         path: "/movies",

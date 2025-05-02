@@ -101,12 +101,15 @@ const Navbar = () => {
               </Menu>
             )}
             {!user && (
-              <Avatar
-                size={"sm"}
-                bg={"gray.800"}
-                as={"button"}
-                onClick={handleGoogleLogin}
-              />
+              <Link to={"/authorization"}>
+                {/* <Avatar
+                  size={"sm"}
+                  bg={"gray.800"}
+                  as={"button"}
+                  onClick={handleGoogleLogin}
+                /> */}
+                <Button>Log In / Sign up</Button>
+              </Link>
             )}
           </Flex>
 
@@ -139,12 +142,15 @@ const Navbar = () => {
                       </Box>
                     </Flex>
                   ) : (
-                    <Avatar
-                      size={"sm"}
-                      bg="gray.800"
-                      as="button"
-                      onClick={handleGoogleLogin}
-                    />
+                    // <Avatar
+                    //   size={"sm"}
+                    //   bg="gray.800"
+                    //   as="button"
+                    //   onClick={handleGoogleLogin}
+                    // />
+                    <Link to={"/authorization"}>
+                      <Button onClick={onClose}>Log In / Sign up</Button>
+                    </Link>
                   )}
                 </DrawerHeader>
 
