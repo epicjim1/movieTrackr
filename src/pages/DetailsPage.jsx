@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Badge,
@@ -74,6 +74,25 @@ const DetailsPage = () => {
   //       setLoading(false);
   //     });
   // }, [type, id]);
+
+  const imdbId = details?.imdb_id;
+  const pluginRef = useRef(null);
+
+  useEffect(() => {
+    setLoading(true);
+    const scriptId = "imdb-rating-api";
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement("script");
+      script.src =
+        "https://ia.media-imdb.com/images/G/01/imdb/plugins/rating/js/rating.js";
+      script.async = true;
+      script.id = scriptId;
+      document.body.appendChild(script);
+    } else if (window.IMDbPlugin) {
+      window.IMDbPlugin.reload();
+    }
+    setLoading(false);
+  }, [imdbId]);
 
   useEffect(() => {
     setLoading(true);
@@ -342,14 +361,38 @@ const DetailsPage = () => {
                   )}
                 </Flex>
               </Flex>
-              <Text
-                color={"gray.400"}
-                fontSize={"sm"}
-                fontStyle={"italic"}
-                my={"5"}
-              >
-                {details?.tagline}
-              </Text>
+              <Flex alignItems="center" gap={3}>
+                <span
+                  class="imdbRatingPlugin"
+                  data-user="ur200783260"
+                  data-title={imdbId}
+                  data-style="p1"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "4px",
+                  }}
+                >
+                  <a
+                    href={`https://www.imdb.com/title/${imdbId}/?ref_=plg_rt_1`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <img
+                      src="https://ia.media-imdb.com/images/G/01/imdb/plugins/rating/images/imdb_46x22.png"
+                      alt="Prey (2022) on IMDb"
+                    />
+                  </a>
+                </span>
+                <Text
+                  color={"gray.400"}
+                  fontSize={"sm"}
+                  fontStyle={"italic"}
+                  my={"5"}
+                >
+                  {details?.tagline}
+                </Text>
+              </Flex>
               <Heading fontSize={"xl"} mb={"3"}>
                 Overview
               </Heading>
@@ -409,6 +452,29 @@ const DetailsPage = () => {
               </Box>
             ))}
         </Flex>
+
+        {type === "movie" && imdbId !== null && (
+          <>
+            <Heading
+              as={"h2"}
+              fontSize={"medium"}
+              textTransform={"uppercase"}
+              mt={"10"}
+              mb={"5"}
+            >
+              Watch Here
+            </Heading>
+            <iframe
+              src={`https://vidsrc.cc/v2/embed/movie/${imdbId}?autoPlay=false`}
+              style={{ width: "100%", height: "700px" }}
+              frameborder="0"
+              referrerpolicy="origin"
+              allowfullscreen
+              allow="fullscreen"
+              sandbox="allow-same-origin allow-scripts allow-presentation allow-popups"
+            ></iframe>
+          </>
+        )}
 
         <Heading
           as={"h2"}
