@@ -90,6 +90,9 @@ const Navbar = () => {
                   />
                 </MenuButton>
                 <MenuList>
+                  <Link to={"/account"}>
+                    <MenuItem>Account</MenuItem>
+                  </Link>
                   <Link to={"/watchedfilms"}>
                     <MenuItem>Watched List</MenuItem>
                   </Link>
@@ -156,6 +159,7 @@ const Navbar = () => {
 
                 <DrawerBody>
                   <Flex flexDirection={"column"} gap={"4"} onClick={onClose}>
+                    {user && <Link to={"/account"}>Account</Link>}
                     <Link to="/">Home</Link>
                     <Link to="/movies">Movies</Link>
                     <Link to="/shows">TV Shows</Link>

@@ -64,7 +64,7 @@ const AuthPage = () => {
               <TabPanel>
                 <VStack spacing={7} align="stretch">
                   <Heading size="md" textAlign="center" color="white">
-                    Welcome back
+                    Welcome back (ONLY GOOGLE WORKS)
                   </Heading>
                   <Input
                     placeholder="Email"
@@ -104,7 +104,7 @@ const AuthPage = () => {
               <TabPanel>
                 <VStack spacing={7} align="stretch">
                   <Heading size="md" textAlign="center" color="white">
-                    Create an account
+                    Create an account (ONLY GOOGLE WORKS)
                   </Heading>
                   <Input
                     placeholder="Email"

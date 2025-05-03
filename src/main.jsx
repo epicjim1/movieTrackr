@@ -16,6 +16,7 @@ import Protected from "./components/routes/Protected.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import WatchedFilms from "./pages/WatchedFilms.jsx";
 import AuthPage from "./pages/AuthPage.jsx";
+import Account from "./pages/Account.jsx";
 
 const router = createBrowserRouter([
   {
@@ -45,6 +46,14 @@ const router = createBrowserRouter([
       {
         path: "/:type/:id",
         element: <DetailsPage />,
+      },
+      {
+        path: "/account",
+        element: (
+          <Protected>
+            <Account />
+          </Protected>
+        ),
       },
       {
         path: "/watchedfilms",

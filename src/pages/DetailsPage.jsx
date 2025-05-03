@@ -48,6 +48,7 @@ const DetailsPage = () => {
     addToWatchedFilms,
     checkIfInWatchedFilms,
     removeFromWatchedFilms,
+    getIllegalMode,
   } = useFirestore();
   const toast = useToast();
 
@@ -59,6 +60,7 @@ const DetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [isInWatchlist, setIsInWatchlist] = useState(false);
   const [isInWatchedFilms, setIsInWatchedFilms] = useState(false);
+  const [illegalMode, setIllegalMode] = useState(false);
 
   // useEffect(() => {
   //   setLoading(true);
@@ -132,6 +134,11 @@ const DetailsPage = () => {
           ?.filter((video) => video?.type !== "Trailer")
           ?.slice(0, 10);
         setVideos(videos);
+
+        // if (user?.uid) {
+        //   const mode = await getIllegalMode(user.uid);
+        //   setIllegalMode(mode);
+        // }
       } catch (error) {
         console.log(error, "error");
       } finally {
@@ -142,7 +149,18 @@ const DetailsPage = () => {
     fetchData();
   }, [type, id]);
 
-  console.log(video, videos, "videos");
+  // console.log(video, videos, "videos");
+
+  useEffect(() => {
+    const loadIllegalMode = async () => {
+      if (user?.uid) {
+        const value = await getIllegalMode(user.uid);
+        setIllegalMode(value);
+      }
+    };
+    console.log(imdbId, illegalMode, "DATANIGGER");
+    loadIllegalMode();
+  }, [user?.uid]);
 
   const handleSaveToWatchlist = async () => {
     if (!user) {
@@ -453,7 +471,7 @@ const DetailsPage = () => {
             ))}
         </Flex>
 
-        {type === "movie" && imdbId !== null && (
+        {imdbId !== null && illegalMode === true && (
           <>
             <Heading
               as={"h2"}
@@ -464,15 +482,17 @@ const DetailsPage = () => {
             >
               Watch Here
             </Heading>
-            <iframe
-              src={`https://vidsrc.cc/v2/embed/movie/${imdbId}?autoPlay=false`}
-              style={{ width: "100%", height: "700px" }}
-              frameborder="0"
-              referrerpolicy="origin"
-              allowfullscreen
-              allow="fullscreen"
-              sandbox="allow-same-origin allow-scripts allow-presentation allow-popups"
-            ></iframe>
+            {type === "movie" && (
+              <iframe
+                src={`https://vidsrc.cc/v2/embed/movie/${imdbId}?autoPlay=false`}
+                style={{ width: "100%", height: "700px" }}
+                frameborder="0"
+                referrerpolicy="origin"
+                allowfullscreen
+                allow="fullscreen"
+                sandbox="allow-same-origin allow-scripts allow-presentation allow-popups"
+              ></iframe>
+            )}
           </>
         )}
 

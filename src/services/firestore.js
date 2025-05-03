@@ -7,6 +7,7 @@ import {
   getDoc,
   getDocs,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { useToast } from "@chakra-ui/react";
 import { useCallback } from "react";
@@ -238,6 +239,23 @@ export const useFirestore = () => {
     }
   };
 
+  const handleIllegalModeChange = async (e, userId) => {
+    const newValue = e.target.checked;
+    await setDoc(
+      doc(db, "users", userId),
+      { illegalMode: newValue },
+      { merge: true } // ← ensures existing fields aren't overwritten
+    );
+  };
+
+  const getIllegalMode = async (userId) => {
+    const querySnapshot = await getDoc(doc(db, "users", userId));
+    const data = querySnapshot.exists()
+      ? querySnapshot.data().illegalMode
+      : false;
+    return data;
+  };
+
   return {
     addDocument,
     addToWatchlist,
@@ -250,5 +268,7 @@ export const useFirestore = () => {
     getWatchedFilms,
     deleteWatchedFilms,
     deleteWatchList,
+    handleIllegalModeChange,
+    getIllegalMode,
   };
 };
