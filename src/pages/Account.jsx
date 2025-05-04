@@ -25,12 +25,14 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/useAuth";
 import { Link } from "react-router-dom";
 import { useFirestore } from "../services/firestore";
+import { updateProfile } from "firebase/auth";
 
 const Account = () => {
   const { handleIllegalModeChange, getIllegalMode } = useFirestore();
   const { user } = useAuth();
   const [show, setShow] = React.useState(false);
   const [illegalMode, setIllegalMode] = useState(false);
+  const [username, setUsername] = useState(user?.displayName || "");
 
   const toast = useToast();
 
@@ -38,15 +40,28 @@ const Account = () => {
     (provider) => provider.providerId === "google.com"
   );
 
-  const handleSave = () => {
-    // Simulate save action
-    toast({
-      title: "Profile updated.",
-      description: "Your changes have been saved.",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
+  const handleSave = async () => {
+    try {
+      await updateProfile(user, {
+        displayName: username, // or `username` depending on your state variable
+      });
+
+      toast({
+        title: "Profile updated.",
+        description: "Your changes have been saved.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Update failed",
+        description: err.message,
+        status: "error",
+        isClosable: true,
+      });
+    }
   };
 
   const orientation = useBreakpointValue(
@@ -114,8 +129,11 @@ const Account = () => {
                     <FormLabel>Username</FormLabel>
                     <Input
                       type="text"
-                      value={isGoogleUser ? user?.displayName : ""}
+                      // value={user?.displayName}
+                      focusBorderColor="purple.500"
                       isDisabled={isGoogleUser}
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
                       // onChange={(e) => setName(e.target.value)}
                     />
                   </FormControl>
@@ -182,7 +200,12 @@ const Account = () => {
                     target="_blank"
                   >
                     <Button colorScheme="green" size="lg">
-                      AdGaurd Website
+                      AdGuard Website (for browser)
+                    </Button>
+                  </Link>
+                  <Link to={"https://1blocker.com/"} target="_blank">
+                    <Button colorScheme="green" size="lg">
+                      IBlocker Website (for iphone)
                     </Button>
                   </Link>
                 </Flex>

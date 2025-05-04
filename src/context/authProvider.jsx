@@ -6,6 +6,7 @@ import {
   signInWithPopup,
   signOut,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
 } from "firebase/auth";
 import PropTypes from "prop-types";
 
@@ -18,6 +19,14 @@ export const AuthProvider = ({ children }) => {
   function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
     return signInWithPopup(auth, provider);
+  }
+
+  function signUpWithEmail(email, password) {
+    return createUserWithEmailAndPassword(auth, email, password);
+  }
+
+  function signInWithEmail(email, password) {
+    return signInWithEmailAndPassword(auth, email, password);
   }
 
   function logout() {
@@ -37,7 +46,16 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, signInWithGoogle, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        signInWithGoogle,
+        signUpWithEmail,
+        signInWithEmail,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

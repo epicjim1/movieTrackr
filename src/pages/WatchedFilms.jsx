@@ -68,7 +68,7 @@ const WatchedFilms = () => {
   }, [user?.uid, getWatchedFilms]);
 
   useEffect(() => {
-    setIsLoading(true);
+    // setIsLoading(true);
     if (originalWatchedFilms.length === 0) return;
 
     let updated = [...originalWatchedFilms];
