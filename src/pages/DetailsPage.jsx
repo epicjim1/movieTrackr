@@ -7,11 +7,13 @@ import {
   CircularProgress,
   CircularProgressLabel,
   Container,
+  Divider,
   Flex,
   Heading,
   Image,
   Spinner,
   Text,
+  useBreakpointValue,
   useToast,
 } from "@chakra-ui/react";
 import {
@@ -35,6 +37,7 @@ import {
 import VideoComponent from "../components/VideoComponent";
 import { useAuth } from "../context/useAuth";
 import { useFirestore } from "../services/firestore";
+import { Select } from "chakra-react-select";
 
 const DetailsPage = () => {
   const router = useParams();
@@ -61,6 +64,18 @@ const DetailsPage = () => {
   const [isInWatchlist, setIsInWatchlist] = useState(false);
   const [isInWatchedFilms, setIsInWatchedFilms] = useState(false);
   const [illegalMode, setIllegalMode] = useState(false);
+  const [selectedSeason, setSelectedSeason] = useState(1);
+  const [selectedEpisode, setSelectedEpisode] = useState(1);
+
+  const orientation = useBreakpointValue(
+    {
+      base: "horizontal",
+      md: "vertical",
+    },
+    {
+      fallback: "md",
+    }
+  );
 
   // useEffect(() => {
   //   setLoading(true);
@@ -77,7 +92,7 @@ const DetailsPage = () => {
   //     });
   // }, [type, id]);
 
-  const imdbId = details?.imdb_id;
+  const imdbId = details?.imdb_id || details?.id;
   const pluginRef = useRef(null);
 
   useEffect(() => {
@@ -246,6 +261,12 @@ const DetailsPage = () => {
     setIsInWatchedFilms(isSetToWatchlist);
   };
 
+  const handleRemoveFromWatchedFilms = async () => {
+    await removeFromWatchedFilms(user?.uid, id);
+    const isSetToWatchedFilms = await checkIfInWatchedFilms(user?.uid, id);
+    setIsInWatchedFilms(isSetToWatchedFilms);
+  };
+
   if (loading) {
     return (
       <Flex justify={"center"}>
@@ -254,17 +275,22 @@ const DetailsPage = () => {
     );
   }
 
-  const handleRemoveFromWatchedFilms = async () => {
-    await removeFromWatchedFilms(user?.uid, id);
-    const isSetToWatchedFilms = await checkIfInWatchedFilms(user?.uid, id);
-    setIsInWatchedFilms(isSetToWatchedFilms);
-  };
-
   const title = details?.title || details?.name;
   const releaseDate =
     type === "tv" ? details?.first_air_date : details?.release_date;
   // const Director = type === "tv" ? details?.created_by : director;
-  console.log(director);
+  // console.log(director);
+
+  const seasonOptions = details?.seasons
+    ?.filter((s) => s.season_number > 0) // skip "Specials"
+    ?.map((s) => ({
+      value: s.season_number,
+      label: `Season ${s.season_number}`,
+    }));
+
+  const seasonData = details?.seasons?.find(
+    (s) => s.season_number === selectedSeason
+  );
 
   return (
     <Box>
@@ -483,15 +509,141 @@ const DetailsPage = () => {
               Watch Here
             </Heading>
             {type === "movie" && (
-              <iframe
-                src={`https://vidsrc.cc/v2/embed/movie/${imdbId}?autoPlay=false`}
-                style={{ width: "100%", height: "700px" }}
-                frameborder="0"
-                referrerpolicy="origin"
-                allowfullscreen
-                allow="fullscreen"
-                sandbox="allow-same-origin allow-scripts allow-presentation allow-popups"
-              ></iframe>
+              <Box
+                boxShadow="0 0 100px rgba(128, 90, 213, 0.7)" // purple glow
+                borderRadius="lg"
+                overflow="hidden"
+                my={5}
+                h={{ base: "201px", md: "702px" }}
+              >
+                <iframe
+                  src={`https://vidsrc.cc/v2/embed/movie/${imdbId}?autoPlay=false`}
+                  style={{ width: "100%", height: "100%" }}
+                  frameborder="0"
+                  referrerpolicy="origin"
+                  allowfullscreen
+                  allow="fullscreen"
+                  sandbox="allow-same-origin allow-scripts allow-presentation allow-popups"
+                ></iframe>
+              </Box>
+            )}
+            {type === "tv" && (
+              <>
+                <Box
+                  boxShadow="0 0 100px rgba(128, 90, 213, 0.7)" // purple glow
+                  borderRadius="lg"
+                  overflow="hidden"
+                  my={5}
+                  h={{ base: "201px", md: "702px" }}
+                >
+                  <iframe
+                    // key={`${selectedSeason}-${selectedEpisode}`}
+                    src={`https://vidsrc.cc/v2/embed/tv/${imdbId}/${selectedSeason}/${selectedEpisode}?autoPlay=false`}
+                    style={{ width: "100%", height: "100%" }}
+                    frameBorder="0"
+                    referrerPolicy="origin"
+                    allowFullScreen
+                    allow="fullscreen"
+                    sandbox="allow-same-origin allow-scripts allow-presentation allow-popups"
+                  ></iframe>
+                </Box>
+                <Flex
+                  alignItems={"baseline"}
+                  direction={{ base: "column", md: "row" }}
+                  gap={"4"}
+                  my={"10"}
+                  // overflow={{ base: "hidden", md: "visible" }}
+                >
+                  <Flex
+                    direction={"column"}
+                    gap={"3"}
+                    justifyContent={"center"}
+                    minW={{ base: "auto", md: "116px" }}
+                  >
+                    <Heading
+                      as={"h2"}
+                      fontSize={"md"}
+                      textTransform={"uppercase"}
+                    >
+                      Seasons:
+                    </Heading>
+                    <Select
+                      focusBorderColor="purple.500"
+                      onChange={(e) => {
+                        setSelectedSeason(Number(e?.value));
+                        setSelectedEpisode(1);
+                        console.log(selectedSeason);
+                      }}
+                      isSearchable={false}
+                      defaultValue={seasonOptions?.[0]}
+                      options={seasonOptions}
+                      chakraStyles={{
+                        valueContainer: (provided) => ({
+                          ...provided,
+                          width: ["150px", "150px", "150px"],
+                          zIndex: "2",
+                        }),
+                        singleValue: (provided) => ({
+                          ...provided,
+                          whiteSpace: "nowrap",
+                          overflow: "visible",
+                          textOverflow: "ellipsis", // already happening, but ensure it's correct
+                          maxWidth: "100%", // important to allow the text to stretch
+                        }),
+                        option: (provided, state) => ({
+                          ...provided,
+                          color: state.isSelected ? "purple.100" : "white",
+                          backgroundColor: state.isSelected
+                            ? "purple.500"
+                            : "auto",
+                        }),
+                        menu: (provided) => ({
+                          ...provided,
+                          zIndex: 999, // Very high value to ensure it appears on top
+                        }),
+                      }}
+                    />
+                  </Flex>
+                  <Divider
+                    // display={{ base: "none", md: "inline" }}
+                    orientation={orientation}
+                    height="auto"
+                    alignSelf="stretch"
+                    borderColor="whiteAlpha.400"
+                    m={{ base: "5px 0px", md: "0px 5px" }}
+                  />
+                  <Flex
+                    direction={{ base: "column", md: "column" }}
+                    gap={{ base: "3", md: "4" }}
+                  >
+                    <Heading
+                      as={"h2"}
+                      fontSize={"md"}
+                      textTransform={"uppercase"}
+                    >
+                      Episodes:
+                    </Heading>
+                    <Flex gap={{ base: "2", md: "4" }} flexWrap={"wrap"}>
+                      {seasonData?.episode_count &&
+                        Array.from(
+                          { length: seasonData.episode_count },
+                          (_, i) => (
+                            <Button
+                              key={i}
+                              size="sm"
+                              colorScheme={
+                                selectedEpisode === i + 1 ? "purple" : "gray"
+                              }
+                              onClick={() => setSelectedEpisode(i + 1)}
+                            >
+                              EP {i + 1}
+                            </Button>
+                          )
+                        )}
+                    </Flex>
+                  </Flex>
+                </Flex>
+              </>
             )}
           </>
         )}
