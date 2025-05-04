@@ -98,8 +98,13 @@ const WatchedFilms = () => {
     // console.log(selectedGenres, "genre state length");
     if (selectedGenres.length > 0) {
       updated = updated.filter((film) => {
-        // Check if the film has **at least one** of the selected genres
-        return film.genres?.some((genre) => selectedGenres.includes(genre));
+        if (selectedGenres.length === 1) {
+          // OR logic: film must have at least the one selected genre
+          return film.genres?.includes(selectedGenres[0]);
+        } else {
+          // AND logic: film must include all selected genres
+          return selectedGenres.every((genre) => film.genres?.includes(genre));
+        }
       });
     }
 
@@ -151,7 +156,7 @@ const WatchedFilms = () => {
         alignItems={"baseline"}
         gap={"4"}
         my={"10"}
-        overflow={{ base: "hidden", md: "visible" }}
+        overflow={{ base: "visible", md: "visible" }}
       >
         <Flex direction={"column"} gap={"3"} justifyContent={"center"}>
           <Heading as={"h2"} fontSize={"md"} textTransform={"uppercase"}>
@@ -286,7 +291,7 @@ const WatchedFilms = () => {
                 setSortOrder(e.value);
               }}
               isSearchable={false}
-              defaultValue={{ value: "descending", label: "Descending" }}
+              defaultValue={{ value: "desc", label: "Descending" }}
               options={[
                 { value: "desc", label: "Descending" },
                 { value: "asc", label: "Ascending" },
@@ -334,6 +339,7 @@ const WatchedFilms = () => {
               options={[
                 { value: "Action", label: "Action" },
                 { value: "Adventure", label: "Adventure" },
+                { value: "Action & Adventure", label: "Action & Adventure" },
                 { value: "Animation", label: "Animation" },
                 { value: "Comedy", label: "Comedy" },
                 { value: "Crime", label: "Crime" },
@@ -347,6 +353,7 @@ const WatchedFilms = () => {
                 { value: "Mystery", label: "Mystery" },
                 { value: "Romance", label: "Romance" },
                 { value: "Science Fiction", label: "Science Fiction" },
+                { value: "Sci-Fi & Fantasy", label: "Sci-Fi & Fantasy" },
                 { value: "Thriller", label: "Thriller" },
                 { value: "War", label: "War" },
                 { value: "Western", label: "Western" },
@@ -398,7 +405,7 @@ const WatchedFilms = () => {
             ml={{ base: "0px", md: "10px" }}
             mr={{ base: "0px", md: "40px" }}
             mb={{ base: "25px", md: "0px" }}
-            maxW={{ base: "244px", md: "325px" }}
+            maxW={{ base: "200px", md: "325px" }}
             align={{ base: "center", md: "normal" }}
             w={{ base: "224px", md: "250px" }}
           >
@@ -434,10 +441,22 @@ const WatchedFilms = () => {
               <SliderMark value={300} mt={"2"} ml={"-2.5"} fontSize={"sm"}>
                 {minutesToHours(300)}
               </SliderMark> */}
-              <SliderMark value={90} mt={"2"} ml={"-5"} fontSize={"sm"}>
+              <SliderMark
+                display={{ base: "none", md: "block" }}
+                value={90}
+                mt={"2"}
+                ml={"-5"}
+                fontSize={"sm"}
+              >
                 {minutesToHours(90)}
               </SliderMark>
-              <SliderMark value={150} mt={"2"} ml={"-2.5"} fontSize={"sm"}>
+              <SliderMark
+                display={{ base: "none", md: "block" }}
+                value={150}
+                mt={"2"}
+                ml={"-2.5"}
+                fontSize={"sm"}
+              >
                 {minutesToHours(150)}
               </SliderMark>
               <SliderMark
