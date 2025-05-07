@@ -22,7 +22,9 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import {
   HamburgerIcon,
+  MoonIcon,
   SearchIcon,
+  SunIcon,
   TriangleDownIcon,
   TriangleUpIcon,
 } from "@chakra-ui/icons";
@@ -61,9 +63,7 @@ const Navbar = () => {
             aria-label="toggle theme"
             rounded="full"
             onClick={toggleColorMode}
-            icon={
-              colorMode === "dark" ? <TriangleDownIcon /> : <TriangleUpIcon />
-            }
+            icon={colorMode === "dark" ? <MoonIcon /> : <SunIcon />}
           /> */}
 
           {/* Desktop */}
@@ -128,7 +128,7 @@ const Navbar = () => {
             <IconButton onClick={onOpen} icon={<HamburgerIcon />} />
             <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
               <DrawerOverlay />
-              <DrawerContent bg={"black"}>
+              <DrawerContent bg={"Black"}>
                 <DrawerCloseButton />
                 <DrawerHeader>
                   {user ? (

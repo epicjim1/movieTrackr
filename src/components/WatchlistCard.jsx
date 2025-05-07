@@ -12,10 +12,11 @@ import { Link } from "react-router-dom";
 import { imagePath } from "../services/api";
 import { useFirestore } from "../services/firestore";
 import { useAuth } from "../context/useAuth";
-import { CloseIcon, DeleteIcon, StarIcon } from "@chakra-ui/icons";
+import { CheckIcon, CloseIcon, DeleteIcon, StarIcon } from "@chakra-ui/icons";
 
 const WatchlistCard = ({ type, item, setWatchlist }) => {
-  const { removeFromWatchlist } = useFirestore();
+  const { removeFromWatchlist, moveToWatchedFilmsFromWatchlist } =
+    useFirestore();
   const { user } = useAuth();
 
   const handleRemoveClick = (event) => {
@@ -23,6 +24,12 @@ const WatchlistCard = ({ type, item, setWatchlist }) => {
     removeFromWatchlist(user?.uid, item.id).then(() => {
       setWatchlist((prev) => prev.filter((el) => el.id !== item.id));
     });
+  };
+
+  const handleWatchedClick = async (event) => {
+    event.preventDefault();
+    await moveToWatchedFilmsFromWatchlist(user?.uid, item.id.toString());
+    setWatchlist((prev) => prev.filter((el) => el.id !== item.id));
   };
 
   return (
@@ -48,6 +55,20 @@ const WatchlistCard = ({ type, item, setWatchlist }) => {
               top="2px"
               left={"2px"}
               onClick={handleRemoveClick}
+            />
+          </Tooltip>
+          <Tooltip label="Watched">
+            <IconButton
+              aria-label="Watched"
+              icon={<CheckIcon />}
+              size={"sm"}
+              colorScheme="green"
+              variant="solid"
+              position={"absolute"}
+              zIndex={"2"}
+              top="2px"
+              right={"2px"}
+              onClick={handleWatchedClick}
             />
           </Tooltip>
         </Box>

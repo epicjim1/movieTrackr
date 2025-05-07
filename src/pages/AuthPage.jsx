@@ -118,8 +118,8 @@ const AuthPage = () => {
           shadow="xl"
           w="full"
           maxW="400px"
-          maxH={"427px"}
-          mt={{ base: "50px", md: "100px" }}
+          // maxH={"427px"}
+          mt={{ base: "20px", md: "100px" }}
         >
           <Tabs
             isFitted

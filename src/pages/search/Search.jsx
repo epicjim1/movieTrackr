@@ -11,11 +11,16 @@ import {
 import { searchData } from "../../services/api";
 import CardComponent from "../../components/CardComponent";
 import PaginationComponent from "../../components/PaginationComponent";
+import { useSearchParams } from "react-router-dom";
 
 const Search = () => {
-  const [searchValue, setSearchValue] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchValue = searchParams.get("query") || "";
+  const activePage = parseInt(searchParams.get("page")) || 1;
+
+  // const [searchValue, setSearchValue] = useState("");
   const [tempSearchValue, setTempSearchValue] = useState("");
-  const [activePage, setActivePage] = useState(1);
+  // const [activePage, setActivePage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -167,21 +172,40 @@ const Search = () => {
     return activePage;
   }, []);
 
+  // useEffect(() => {
+  //   if (searchValue) {
+  //     // Reset to page 1 if search value changes
+  //     if (activePage !== 1 && tempSearchValue !== searchValue) {
+  //       setActivePage(1);
+  //     } else {
+  //       loadEnoughItems(searchValue, activePage);
+  //     }
+  //   }
+  // }, [searchValue, activePage, loadEnoughItems]);
   useEffect(() => {
     if (searchValue) {
-      // Reset to page 1 if search value changes
-      if (activePage !== 1 && tempSearchValue !== searchValue) {
-        setActivePage(1);
-      } else {
-        loadEnoughItems(searchValue, activePage);
-      }
+      loadEnoughItems(searchValue, activePage);
     }
   }, [searchValue, activePage, loadEnoughItems]);
 
+  useEffect(() => {
+    setTempSearchValue(searchValue);
+  }, [searchValue]);
+
   const handleSearch = (e) => {
     e.preventDefault();
-    setActivePage(1);
-    setSearchValue(tempSearchValue);
+    // setActivePage(1);
+    // setSearchValue(tempSearchValue);
+    setSearchParams({ query: tempSearchValue, page: 1 });
+  };
+
+  const handlePageChange = (page) => {
+    setSearchParams((prev) => {
+      return {
+        query: searchValue,
+        page: page,
+      };
+    });
   };
 
   return (
@@ -198,7 +222,9 @@ const Search = () => {
           _placeholder={{ color: "gray.subtle" }}
           value={tempSearchValue}
           onChange={(e) => setTempSearchValue(e.target.value)}
+          focusBorderColor="purple.500"
           mb={"10"}
+          autoFocus
         />
       </form>
 
@@ -245,7 +271,8 @@ const Search = () => {
           <PaginationComponent
             activePage={activePage}
             totalPages={totalPages}
-            setActivePage={setActivePage}
+            // setActivePage={setActivePage}
+            setActivePage={handlePageChange}
           />
         </Flex>
       )}

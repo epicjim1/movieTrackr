@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { fetchDetails, imagePath } from "../services/api";
-import { DeleteIcon, StarIcon } from "@chakra-ui/icons";
+import { CheckIcon, DeleteIcon, StarIcon } from "@chakra-ui/icons";
 import { MdOutlineWatchLater } from "react-icons/md";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { useAuth } from "../context/useAuth";
@@ -22,8 +22,12 @@ const CardComponent = ({
   setWatchlist = null,
 }) => {
   const { user } = useAuth();
-  const { addToWatchlist, addToWatchedFilms, removeFromWatchlist } =
-    useFirestore();
+  const {
+    addToWatchlist,
+    addToWatchedFilms,
+    removeFromWatchlist,
+    moveToWatchedFilmsFromWatchlist,
+  } = useFirestore();
   const toast = useToast();
 
   const handleAddToWatched = async (event) => {
@@ -95,6 +99,12 @@ const CardComponent = ({
     });
   };
 
+  const handleWatchedClick = async (event) => {
+    event.preventDefault();
+    await moveToWatchedFilmsFromWatchlist(user?.uid, item.id.toString());
+    setWatchlist((prev) => prev.filter((el) => el.id !== item.id));
+  };
+
   return (
     <Link to={`/${type}/${item?.id}`}>
       <Box position={"relative"} overflow={"hidden"}>
@@ -162,6 +172,8 @@ const CardComponent = ({
               position="absolute"
               top="2"
               left="2"
+              display={"flex"}
+              gap={"2"}
             >
               <Tooltip label="Remove from watchlist">
                 <IconButton
@@ -177,6 +189,22 @@ const CardComponent = ({
                   // top="2px"
                   // left={"2px"}
                   onClick={handleRemoveClick}
+                />
+              </Tooltip>
+              <Tooltip label="Watched">
+                <IconButton
+                  aria-label="Watched"
+                  icon={<CheckIcon />}
+                  size={"sm"}
+                  colorScheme="green"
+                  variant="solid"
+                  // position={"absolute"}
+                  // className="overlay"
+                  // opacity={"0"}
+                  // zIndex={"999"}
+                  // top="2px"
+                  // left={"2px"}
+                  onClick={handleWatchedClick}
                 />
               </Tooltip>
             </Box>

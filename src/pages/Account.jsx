@@ -7,6 +7,7 @@ import {
   FormControl,
   FormLabel,
   Heading,
+  IconButton,
   Input,
   InputGroup,
   InputRightElement,
@@ -19,6 +20,7 @@ import {
   TabPanels,
   Tabs,
   useBreakpointValue,
+  useColorMode,
   useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
@@ -26,8 +28,10 @@ import { useAuth } from "../context/useAuth";
 import { Link } from "react-router-dom";
 import { useFirestore } from "../services/firestore";
 import { updateProfile } from "firebase/auth";
+import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 
 const Account = () => {
+  const { toggleColorMode, colorMode } = useColorMode();
   const { handleIllegalModeChange, getIllegalMode } = useFirestore();
   const { user } = useAuth();
   const [show, setShow] = React.useState(false);
@@ -175,6 +179,21 @@ const Account = () => {
               </TabPanel>
               <TabPanel>
                 <Flex direction={"column"} alignItems={"center"} gap={"7"}>
+                  <FormControl
+                    display="flex"
+                    alignItems="center"
+                    justifyContent={"center"}
+                    // bg={"red"}
+                  >
+                    <FormLabel htmlFor="theme-btn" mb="0">
+                      Light/Dark mode:
+                    </FormLabel>
+                    <IconButton
+                      aria-label="toggle theme"
+                      onClick={toggleColorMode}
+                      icon={colorMode === "dark" ? <MoonIcon /> : <SunIcon />}
+                    />
+                  </FormControl>
                   <FormControl
                     display="flex"
                     alignItems="center"

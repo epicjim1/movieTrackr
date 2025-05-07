@@ -239,6 +239,31 @@ export const useFirestore = () => {
     }
   };
 
+  const moveToWatchedFilmsFromWatchlist = async (userId, dataId) => {
+    try {
+      const docRef = doc(db, "users", userId, "watchlist", dataId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+
+        // Add to watchedfilms
+        const watchedRef = doc(db, "users", userId, "watchedfilms", dataId);
+        await setDoc(watchedRef, {
+          ...data,
+          saved_at: new Date().toISOString(), // Optionally update timestamp
+        });
+
+        // Remove from watchlist
+        await deleteDoc(docRef);
+      } else {
+        console.error("Watchlist document not found:", dataId);
+      }
+    } catch (error) {
+      console.error("Error moving to watchedfilms:", error);
+    }
+  };
+
   const handleIllegalModeChange = async (e, userId) => {
     const newValue = e.target.checked;
     await setDoc(
@@ -270,5 +295,6 @@ export const useFirestore = () => {
     deleteWatchList,
     handleIllegalModeChange,
     getIllegalMode,
+    moveToWatchedFilmsFromWatchlist,
   };
 };
