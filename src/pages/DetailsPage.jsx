@@ -14,6 +14,7 @@ import {
   Spinner,
   Text,
   useBreakpointValue,
+  useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
 import {
@@ -173,7 +174,7 @@ const DetailsPage = () => {
         setIllegalMode(value);
       }
     };
-    console.log(imdbId, illegalMode, "DATANIGGER");
+
     loadIllegalMode();
   }, [user?.uid]);
 
@@ -318,7 +319,7 @@ const DetailsPage = () => {
               src={`${imagePath}/${details?.poster_path}`}
             />
             <Box>
-              <Heading fontSize={"3xl"}>
+              <Heading fontSize={"3xl"} color={"white"}>
                 {title}{" "}
                 <Text as={"span"} fontWeight={"normal"} color={"purple.200"}>
                   {new Date(releaseDate).getFullYear()}
@@ -328,17 +329,17 @@ const DetailsPage = () => {
               <Flex alignItems={"center"} gap={"4"} mt={"1"} mb={"5"}>
                 <Flex alignItems={"center"}>
                   <CalendarIcon mr={"2"} color={"gray.400"} />
-                  <Text fontSize={"sm"}>
+                  <Text fontSize={"sm"} color={"white"}>
                     {new Date(releaseDate).toLocaleDateString("en-US")} (US)
                   </Text>
                 </Flex>
 
                 {type === "movie" && (
                   <>
-                    <Box>*</Box>
+                    <Box color={"white"}>*</Box>
                     <Flex alignItems={"center"}>
                       <TimeIcon mr={"2"} color={"gray.400"} />
-                      <Text fontSize={"sm"}>
+                      <Text fontSize={"sm"} color={"white"}>
                         {minutesToHours(details?.runtime)}
                       </Text>
                     </Flex>
@@ -356,14 +357,14 @@ const DetailsPage = () => {
                   color={resolveRatingColor(details?.vote_average)}
                   thickness={"6px"}
                 >
-                  <CircularProgressLabel fontSize={"lg"}>
+                  <CircularProgressLabel fontSize={"lg"} color={"white"}>
                     {ratingToPercentage(details?.vote_average)}
                     <Box as="span" fontSize={"10px"} ml={"1"}>
                       %
                     </Box>
                   </CircularProgressLabel>
                 </CircularProgress>
-                <Text display={{ base: "none", md: "initial" }}>
+                <Text display={{ base: "none", md: "initial" }} color={"white"}>
                   User Score
                 </Text>
                 <Flex wrap={"wrap"} gap={{ base: "1", md: "4" }}>
@@ -381,6 +382,9 @@ const DetailsPage = () => {
                       leftIcon={<SmallAddIcon />}
                       variant={"outline"}
                       onClick={handleSaveToWatchedFilms}
+                      color={"white"}
+                      borderColor="whiteAlpha.300"
+                      _hover={{ bg: "whiteAlpha.200", color: "white" }}
                     >
                       Add to Watched List
                     </Button>
@@ -399,6 +403,12 @@ const DetailsPage = () => {
                       leftIcon={<SmallAddIcon />}
                       variant={"outline"}
                       onClick={handleSaveToWatchlist}
+                      color={"white"}
+                      borderColor="whiteAlpha.300"
+                      _hover={{
+                        bg: "whiteAlpha.200",
+                        color: "white",
+                      }}
                     >
                       Add to Watch Later
                     </Button>
@@ -406,28 +416,30 @@ const DetailsPage = () => {
                 </Flex>
               </Flex>
               <Flex alignItems="center" gap={3}>
-                <span
-                  class="imdbRatingPlugin"
-                  data-user="ur200783260"
-                  data-title={imdbId}
-                  data-style="p1"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "4px",
-                  }}
-                >
-                  <a
-                    href={`https://www.imdb.com/title/${imdbId}/?ref_=plg_rt_1`}
-                    target="_blank"
-                    rel="noreferrer"
+                {details?.imdb_id && (
+                  <span
+                    class="imdbRatingPlugin"
+                    data-user="ur200783260"
+                    data-title={imdbId}
+                    data-style="p1"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "4px",
+                    }}
                   >
-                    <img
-                      src="https://ia.media-imdb.com/images/G/01/imdb/plugins/rating/images/imdb_46x22.png"
-                      alt="Prey (2022) on IMDb"
-                    />
-                  </a>
-                </span>
+                    <a
+                      href={`https://www.imdb.com/title/${imdbId}/?ref_=plg_rt_1`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <img
+                        src="https://ia.media-imdb.com/images/G/01/imdb/plugins/rating/images/imdb_46x22.png"
+                        alt="Prey (2022) on IMDb"
+                      />
+                    </a>
+                  </span>
+                )}
                 <Text
                   color={"gray.400"}
                   fontSize={"sm"}
@@ -437,20 +449,27 @@ const DetailsPage = () => {
                   {details?.tagline}
                 </Text>
               </Flex>
-              <Heading fontSize={"xl"} mb={"3"}>
+              <Heading fontSize={"xl"} mb={"3"} color={"white"}>
                 Overview
               </Heading>
-              <Text fontSize={"md"} mb={"3"}>
+              <Text fontSize={"md"} mb={"3"} color={"white"}>
                 {details?.overview}
               </Text>
               <Flex mt={"6"} gap={"2"} flexWrap={"wrap"}>
                 {details?.genres?.map((genre) => (
-                  <Badge key={genre?.id} p={"1"}>
+                  <Badge
+                    key={genre?.id}
+                    p={"1"}
+                    color={"white"}
+                    bg={"whiteAlpha.300"}
+                  >
                     {genre?.name}
                   </Badge>
                 ))}
               </Flex>
-              <Text mt={"4"}>{director}</Text>
+              <Text mt={"4"} color={"white"}>
+                {director}
+              </Text>
             </Box>
           </Flex>
         </Container>
@@ -473,7 +492,7 @@ const DetailsPage = () => {
                 key={item?.id}
                 minW={"150px"}
                 maxW={"150px"}
-                bg={"whiteAlpha.200"}
+                bg={useColorModeValue("blackAlpha.500", "whiteAlpha.200")}
                 borderRadius={"10"}
                 overflow={"hidden"}
                 mb={"5"}

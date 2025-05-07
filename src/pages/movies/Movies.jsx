@@ -33,7 +33,7 @@ const Movies = () => {
 
   return (
     <Container maxW={"container.xl"}>
-      <Flex alignItems={"baseline"} gap={"4"} my={"10"}>
+      <Flex alignItems={"baseline"} gap={"4"} my={"7"}>
         <Heading as={"h2"} fontSize={"md"} textTransform={"uppercase"}>
           Discover Movies
         </Heading>

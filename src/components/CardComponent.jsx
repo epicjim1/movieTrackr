@@ -221,7 +221,7 @@ const CardComponent = ({
             opacity={"0"}
             transition={"opacity 0.3s ease-in-out"}
           >
-            <Text textAlign={"center"} noOfLines={"1"}>
+            <Text textAlign={"center"} noOfLines={"1"} color={"white"}>
               {item?.title || item?.name}
             </Text>
             <Text
@@ -241,8 +241,8 @@ const CardComponent = ({
               mt={"1"}
               // mb={"5"}
             >
-              <StarIcon fontSize={"small"} />
-              <Text>{item?.vote_average?.toFixed(1)}</Text>
+              <StarIcon fontSize={"small"} color={"white"} />
+              <Text color={"white"}>{item?.vote_average?.toFixed(1)}</Text>
             </Flex>
           </Box>
         </Box>

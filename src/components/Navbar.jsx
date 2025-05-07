@@ -17,6 +17,7 @@ import {
   MenuList,
   useDisclosure,
   useColorMode,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
@@ -46,7 +47,7 @@ const Navbar = () => {
   return (
     <Box py={"4"} mb={"2"}>
       <Container maxW={"container.xl"}>
-        <Flex justifyContent={"space-between"}>
+        <Flex justifyContent={"space-between"} alignItems={"center"}>
           <Link to="/">
             <Box
               fontSize={"2xl"}
@@ -128,7 +129,7 @@ const Navbar = () => {
             <IconButton onClick={onOpen} icon={<HamburgerIcon />} />
             <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
               <DrawerOverlay />
-              <DrawerContent bg={"Black"}>
+              <DrawerContent bg={useColorModeValue("white", "black")}>
                 <DrawerCloseButton />
                 <DrawerHeader>
                   {user ? (
