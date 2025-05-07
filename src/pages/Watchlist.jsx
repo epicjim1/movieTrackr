@@ -33,6 +33,7 @@ import { minutesToHours } from "../utils/helpers";
 import { CiBoxList } from "react-icons/ci";
 import { CiGrid41 } from "react-icons/ci";
 import CardComponent from "../components/CardComponent";
+import { useSearchParams } from "react-router-dom";
 
 const Watchlist = () => {
   const { getWatchlist, deleteWatchList } = useFirestore();
@@ -43,6 +44,7 @@ const Watchlist = () => {
   const [activePage, setActivePage] = useState(1);
   const itemsPerPage = 30;
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const [filterByType, setFilterByType] = useState("all");
   const [sortBy, setSortBy] = useState("saved_at.desc");
   const [sortOrder, setSortOrder] = useState("desc");
@@ -70,6 +72,43 @@ const Watchlist = () => {
         });
     }
   }, [user?.uid, getWatchlist]);
+
+  useEffect(() => {
+    const type = searchParams.get("type") || "all";
+    const sort = searchParams.get("sort") || "saved_at.desc";
+    const order = searchParams.get("order") || "desc";
+    const genres = searchParams.get("genres")?.split(",") || [];
+    const runtime = parseInt(searchParams.get("runtime")) || 240;
+    const page = parseInt(searchParams.get("page")) || 1;
+
+    setFilterByType(type);
+    setSortBy(sort);
+    setSortOrder(order);
+    setSelectedGenres(genres);
+    setRuntimeFilter(runtime);
+    setSliderValue(runtime);
+    setActivePage(page);
+  }, []);
+
+  useEffect(() => {
+    const params = {
+      type: filterByType,
+      sort: sortBy,
+      order: sortOrder,
+      genres: selectedGenres.length > 0 ? selectedGenres.join(",") : [],
+      runtime: runtimeFilter,
+      page: activePage,
+    };
+
+    setSearchParams(params);
+  }, [
+    filterByType,
+    sortBy,
+    sortOrder,
+    selectedGenres,
+    runtimeFilter,
+    activePage,
+  ]);
 
   useEffect(() => {
     // setIsLoading(true);
@@ -153,6 +192,29 @@ const Watchlist = () => {
     }
   }, [watchlist, totalPages]);
 
+  const genreOptions = [
+    { value: "Action", label: "Action" },
+    { value: "Adventure", label: "Adventure" },
+    { value: "Action & Adventure", label: "Action & Adventure" },
+    { value: "Animation", label: "Animation" },
+    { value: "Comedy", label: "Comedy" },
+    { value: "Crime", label: "Crime" },
+    { value: "Documentary", label: "Documentary" },
+    { value: "Drama", label: "Drama" },
+    { value: "Family", label: "Family" },
+    { value: "Fantasy", label: "Fantasy" },
+    { value: "History", label: "History" },
+    { value: "Horror", label: "Horror" },
+    { value: "Music", label: "Music" },
+    { value: "Mystery", label: "Mystery" },
+    { value: "Romance", label: "Romance" },
+    { value: "Science Fiction", label: "Science Fiction" },
+    { value: "Sci-Fi & Fantasy", label: "Sci-Fi & Fantasy" },
+    { value: "Thriller", label: "Thriller" },
+    { value: "War", label: "War" },
+    { value: "Western", label: "Western" },
+  ];
+
   return (
     <Container maxW={"container.xl"}>
       <Flex
@@ -200,7 +262,12 @@ const Watchlist = () => {
                 setFilterByType(e ? e.value : "all");
               }}
               isSearchable={false}
-              defaultValue={{ value: "all", label: "All" }}
+              // defaultValue={{ value: "all", label: "All" }}
+              value={[
+                { value: "all", label: "All" },
+                { value: "tv", label: "TV Shows" },
+                { value: "movie", label: "Films" },
+              ].find((opt) => opt.value === filterByType)}
               options={[
                 { value: "all", label: "All" },
                 { value: "tv", label: "TV Shows" },
@@ -247,7 +314,12 @@ const Watchlist = () => {
                 setSortBy(e.value);
               }}
               isSearchable={false}
-              defaultValue={{ value: "saved_at.desc", label: "When Added" }}
+              // defaultValue={{ value: "saved_at.desc", label: "When Added" }}
+              value={[
+                { value: "saved_at.desc", label: "When Added" },
+                { value: "vote_average.desc", label: "Rating" },
+                { value: "release_date.desc", label: "Release Date" },
+              ].find((opt) => opt.value === sortBy)}
               options={[
                 { value: "saved_at.desc", label: "When Added" },
                 { value: "vote_average.desc", label: "Rating" },
@@ -293,7 +365,11 @@ const Watchlist = () => {
                 setSortOrder(e.value);
               }}
               isSearchable={false}
-              defaultValue={{ value: "desc", label: "Descending" }}
+              // defaultValue={{ value: "desc", label: "Descending" }}
+              value={[
+                { value: "desc", label: "Descending" },
+                { value: "asc", label: "Ascending" },
+              ].find((opt) => opt.value === sortOrder)}
               options={[
                 { value: "desc", label: "Descending" },
                 { value: "asc", label: "Ascending" },
@@ -337,29 +413,11 @@ const Watchlist = () => {
                 setActivePage(1);
                 setSelectedGenres(e.map((option) => option.value));
               }}
+              value={genreOptions.filter((opt) =>
+                selectedGenres.includes(opt.value)
+              )}
               focusBorderColor="purple.500"
-              options={[
-                { value: "Action", label: "Action" },
-                { value: "Adventure", label: "Adventure" },
-                { value: "Action & Adventure", label: "Action & Adventure" },
-                { value: "Animation", label: "Animation" },
-                { value: "Comedy", label: "Comedy" },
-                { value: "Crime", label: "Crime" },
-                { value: "Documentary", label: "Documentary" },
-                { value: "Drama", label: "Drama" },
-                { value: "Family", label: "Family" },
-                { value: "Fantasy", label: "Fantasy" },
-                { value: "History", label: "History" },
-                { value: "Horror", label: "Horror" },
-                { value: "Music", label: "Music" },
-                { value: "Mystery", label: "Mystery" },
-                { value: "Romance", label: "Romance" },
-                { value: "Science Fiction", label: "Science Fiction" },
-                { value: "Sci-Fi & Fantasy", label: "Sci-Fi & Fantasy" },
-                { value: "Thriller", label: "Thriller" },
-                { value: "War", label: "War" },
-                { value: "Western", label: "Western" },
-              ]}
+              options={genreOptions}
               placeholder="Select some genres..."
               chakraStyles={{
                 control: (provided) => ({
@@ -404,12 +462,12 @@ const Watchlist = () => {
             </Text>
             <Slider
               aria-label="slider-ex-6"
+              value={sliderValue}
               onChange={(val) => setSliderValue(val)}
               onChangeEnd={(val) => setRuntimeFilter(val)}
               min={0}
               max={240}
               step={30}
-              defaultValue={sliderValue}
               isDisabled={filterByType !== "movie"}
             >
               <SliderMark
