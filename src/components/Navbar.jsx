@@ -19,7 +19,7 @@ import {
   useColorMode,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import {
   HamburgerIcon,
@@ -42,6 +42,13 @@ const Navbar = () => {
     } catch (err) {
       console.log("error", err);
     }
+  };
+
+  const location = useLocation();
+  const activeStyle = {
+    border: "2px solid purple",
+    // paddingBottom: "4px",
+    color: "purple.500",
   };
 
   return (
@@ -72,10 +79,83 @@ const Navbar = () => {
             gap={"4"}
             alignItems={"center"}
             display={{ base: "none", md: "flex" }}
+            textAlign={"center"}
+            position={"relative"}
           >
-            <Link to="/">Home</Link>
-            <Link to="/movies">Movies</Link>
-            <Link to="/shows">TV Shows</Link>
+            <Box position="relative" w={"60px"}>
+              <Link
+                to="/"
+                // style={
+                //   location.pathname === "/"
+                //     ? {
+                //         width: "60px",
+                //         borderBottom: "8px solid transparent",
+                //         borderColor: "purple",
+                //       }
+                //     : { width: "60px", borderBottom: "8px solid transparent" }
+                // }
+              >
+                <Box
+                  as="span"
+                  position="relative"
+                  _after={{
+                    content: '""',
+                    position: "absolute",
+                    left: 0,
+                    bottom: "-5px", // pushes underline below text
+                    width: "100%",
+                    height: "2px",
+                    bg:
+                      location.pathname === "/" ? "purple.500" : "transparent",
+                    transition: "background-color 0.3s",
+                  }}
+                >
+                  Home
+                </Box>
+              </Link>
+            </Box>
+            <Box position="relative" w={"60px"}>
+              <Box
+                as="span"
+                position="relative"
+                _after={{
+                  content: '""',
+                  position: "absolute",
+                  left: 0,
+                  bottom: "-5px", // pushes underline below text
+                  width: "100%",
+                  height: "2px",
+                  bg:
+                    location.pathname === "/movies"
+                      ? "purple.500"
+                      : "transparent",
+                  transition: "background-color 0.3s",
+                }}
+              >
+                <Link to="/movies">Movies</Link>
+              </Box>
+            </Box>
+            <Box position="relative" w={"80px"}>
+              <Box
+                as="span"
+                position="relative"
+                _after={{
+                  content: '""',
+                  position: "absolute",
+                  left: 0,
+                  bottom: "-5px", // pushes underline below text
+                  width: "100%",
+                  height: "2px",
+                  bg:
+                    location.pathname === "/shows"
+                      ? "purple.500"
+                      : "transparent",
+                  transition: "background-color 0.3s",
+                }}
+              >
+                <Link to="/shows">TV Shows</Link>
+              </Box>
+            </Box>
             <Link to="/search">
               <SearchIcon fontSize={"xl"} />
             </Link>

@@ -28,7 +28,6 @@ import {
 import WatchlistCard from "../components/WatchlistCard";
 import PaginationComponent from "../components/PaginationComponent";
 import { Select } from "chakra-react-select";
-import { DeleteIcon } from "@chakra-ui/icons";
 import { minutesToHours } from "../utils/helpers";
 import { CiBoxList } from "react-icons/ci";
 import { CiGrid41 } from "react-icons/ci";
@@ -88,7 +87,7 @@ const Watchlist = () => {
     setRuntimeFilter(runtime);
     setSliderValue(runtime);
     setActivePage(page);
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     const params = {

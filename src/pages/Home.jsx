@@ -76,7 +76,7 @@ const Home = () => {
         }}
         gap={"4"}
       >
-        {data &&
+        {/* {data &&
           data?.map((item, i) =>
             loading ? (
               <Skeleton height={"355"} key={i} />
@@ -87,7 +87,18 @@ const Home = () => {
                 type={item?.media_type}
               />
             )
-          )}
+          )} */}
+        {loading
+          ? Array.from({ length: 20 }).map((_, i) => (
+              <Skeleton height={{ base: "256px", md: "355px" }} key={i} />
+            ))
+          : data?.map((item) => (
+              <CardComponent
+                key={item?.id}
+                item={item}
+                type={item?.media_type}
+              />
+            ))}
       </Grid>
     </Container>
   );

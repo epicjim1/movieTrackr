@@ -84,7 +84,7 @@ const WatchedFilms = () => {
     setRuntimeFilter(runtime);
     setSliderValue(runtime);
     setActivePage(page);
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     const params = {

@@ -131,7 +131,7 @@ const CardComponent = ({
             alt={item?.title || item?.name}
             height={"auto"}
             width={"100%"}
-            // minH={"355px"}
+            minH={{ base: "256.5px", md: "355.19px" }}
           />
           {isEnabled !== "false" && isEnabled !== "watchlist" && (
             <Box
